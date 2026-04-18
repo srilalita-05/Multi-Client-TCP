@@ -139,12 +139,12 @@ Hello everyone
 
 ## 👥 Team Contributions
 
-| Member   | Responsibility              |
-| -------- | --------------------------- |
-| Member 1 | Server setup & networking   |
-| Member 2 | Threading & synchronization |
-| Member 3 | Messaging logic             |
-| Member 4 | Client, demo & performance  |
+| Member       | Responsibility              |
+| ------------ | --------------------------- |
+| Sreeja(Mem1) | Server setup & networking   |
+| Naveen(Mem2) | Threading & synchronization |
+| Lalita(Mem3) | Messaging logic             |
+| Raghu (Mem4) | Client, demo & performance  |
 
 ---
 

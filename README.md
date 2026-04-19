@@ -1,161 +1,205 @@
-# 💬 Multi-Client Chat Server (Thread-Based)
+# Multi-Client Chat Server (Windows - Thread-Based)
 
-A TCP-based multi-client chat application built using **C**, demonstrating **socket programming**, **multithreading**, and **synchronization using mutex**.
+## 📌 Overview
 
----
+This project implements a **TCP-based multi-client chat system** using C on Windows.
+The server handles multiple clients simultaneously using threads and supports:
 
-## 🚀 Features
-
-* 🔗 Multiple clients can connect simultaneously
-* 🧵 Thread-per-client architecture using POSIX threads
-* 📢 Broadcast messaging (to all clients)
-* 💌 Private messaging using `@username`
-* 🔒 Thread-safe client handling using mutex
-* ❌ Graceful client disconnection handling
+* Broadcast messaging (to all clients)
+* Private messaging (user-to-user)
+* Client join/leave notifications
+* Thread-safe client management
 
 ---
 
-## 🏗️ Architecture
+## 🧠 Architecture
 
-* **Server**
+### Server
 
-  * Accepts incoming TCP connections
-  * Spawns a new thread for each client
-  * Maintains a shared client list (mutex protected)
+* Accepts multiple client connections
+* Creates a new thread for each client
+* Maintains a list of connected clients (with usernames)
+* Routes messages:
 
-* **Client**
+  * Broadcast → to all clients
+  * Private → to specific client
 
-  * Connects to server
-  * Sends and receives messages concurrently
+### Client
 
----
-
-## 🧠 Key Concepts Used
-
-* TCP Socket Programming (`socket`, `bind`, `listen`, `accept`)
-* Multithreading (`pthread`)
-* Synchronization (`pthread_mutex`)
-* Inter-process communication
-* String parsing for private messaging
+* Connects to the server
+* Sends messages
+* Receives messages asynchronously using a separate thread
 
 ---
 
-## 📂 Project Structure
+## ⚙️ Features
+
+* ✅ Multi-client support (thread-based)
+* ✅ Username system
+* ✅ Broadcast messaging
+* ✅ Private messaging using `/pm`
+* ✅ Join/leave notifications
+* ✅ Thread synchronization using `CRITICAL_SECTION`
+* ✅ Error handling for unknown users
+
+---
+
+## 🛠️ Technologies Used
+
+* C Programming
+* Winsock2 (Windows Sockets API)
+* Windows Threads (`CreateThread`)
+* Synchronization (`CRITICAL_SECTION`)
+
+---
+
+## 📁 File Structure
 
 ```
-.
-├── server.c   # Server-side implementation
-├── client.c   # Client-side implementation
-└── README.md  # Project documentation
+server.c   → Chat server implementation
+client.c   → Chat client implementation
+README.md  → Project documentation
 ```
 
 ---
 
-## ⚙️ Compilation & Execution
+## 🚀 Compilation
 
-### 🔧 Compile
+Use MinGW / MSYS2:
 
 ```bash
-gcc -o server server.c -lpthread
-gcc -o client client.c -lpthread
-```
-
-### ▶️ Run Server
-
-```bash
-./server 8080
-```
-
-### 💻 Run Client
-
-```bash
-./client 127.0.0.1 8080
+gcc server.c -o server -lws2_32
+gcc client.c -o client -lws2_32
 ```
 
 ---
 
-## 🎥 Usage
+## ▶️ How to Run
 
-1. Start the server
-2. Open multiple terminals and run clients
-3. Enter unique usernames
+### Step 1: Start Server
 
-### 📢 Broadcast Message
+```bash
+./server
+```
+
+---
+
+### Step 2: Start Clients (in separate terminals)
+
+```bash
+./client
+```
+
+---
+
+### Step 3: Enter Username
+
+Each client must enter a username after connecting.
+
+---
+
+## 💬 Usage
+
+### 🔹 Broadcast Message
+
+Just type:
 
 ```
 Hello everyone
 ```
 
-### 💌 Private Message
+All clients will receive:
 
 ```
-@username Hello!
+Alice: Hello everyone
 ```
 
 ---
 
-## 🧵 Thread Handling
+### 🔹 Private Message
 
-* Each client is handled by a separate thread
-* Threads run concurrently to allow real-time communication
-* Mutex is used to protect shared client data
+Format:
+
+```
+/pm <username> <message>
+```
+
+Example:
+
+```
+/pm Bob Hi bro
+```
+
+Output (only for Bob):
+
+```
+[PM] Alice: Hi bro
+```
+
+---
+
+## ⚠️ Important Notes
+
+* Usernames are **case-sensitive**
+* Each client must have a **unique username** (recommended)
+* Server must be started **before clients**
+* Private messaging fails if username does not match exactly
+
+---
+
+## 🧪 Testing
+
+Run:
+
+* 1 server
+* 2 or more clients
+
+Test:
+
+* Broadcast messages
+* Private messages
+* Client disconnects
 
 ---
 
 ## 🔒 Synchronization
 
-* Shared resource: `client_list`
-* Protected using `pthread_mutex`
-* Prevents race conditions during:
+The server uses `CRITICAL_SECTION` to:
 
-  * Adding clients
-  * Removing clients
-  * Broadcasting messages
+* Protect shared client list
+* Avoid race conditions between threads
 
 ---
 
-## 📊 Performance Analysis
+## 🧩 Limitations
 
-### ✅ Strengths
-
-* Supports multiple clients simultaneously
-* Low latency for small-scale usage
-* Efficient message handling
-
-### ⚠️ Limitations
-
-* Thread-per-client model is not scalable for large systems
-* Fixed maximum number of clients
-* Blocking I/O operations
-
-### 🚀 Future Improvements
-
-* Use `select()` or `epoll()` for scalability
-* Add encryption (TLS)
-* Implement user authentication
-* Build GUI client
+* No username uniqueness enforcement
+* No message persistence
+* Limited number of clients (`MAX_CLIENTS`)
+* No GUI (console-based)
 
 ---
 
-## 👥 Team Contributions
+## 🚀 Future Improvements
 
-| Member       | Responsibility              |
-| ------------ | --------------------------- |
-| Sreeja(Mem1) | Server setup & networking   |
-| Naveen(Mem2) | Threading & synchronization |
-| Lalita(Mem3) | Messaging logic             |
-| Raghu (Mem4) | Client, demo & performance  |
+* Add `/list` command to view active users
+* Enforce unique usernames
+* Add timestamps to messages
+* GUI-based client (using Qt or similar)
+* File sharing support
+* Scalable model using `select()` or IOCP
 
 ---
 
 ## 🎯 Conclusion
 
-This project demonstrates how **networking, concurrency, and synchronization** work together to build a real-time communication system similar to modern chat applications.
+This project demonstrates:
 
----
+* Socket programming
+* Multithreading
+* Synchronization
+* Client-server architecture
 
-## 💡 Key Takeaway
-
-> Understanding low-level networking using C provides deeper insight into how real-world communication systems operate.
+It serves as a strong foundation for building real-time communication systems.
 
 ---
